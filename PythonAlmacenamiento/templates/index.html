@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulario de Datos</title>
+    <style>
+        /* Elimina los botones de incremento/decremento en navegadores modernos */
+        input[type="number"]::-webkit-inner-spin-button,
+        input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        /* Elimina los botones en Firefox */
+        input[type="number"] {
+            -moz-appearance: textfield;
+        }
+    </style>
+</head>
+<body>
+    <h1>Formulario de Datos para Excel</h1>
+    
+    <form id="formulario" method="POST">
+        <input type="text" id="nombre" name="nombre" placeholder="Nombre" required><br>
+        <input type="number" id="ide" name="ide" placeholder="Identificación" required><br>
+        <input type="email" id="correo" name="correo" placeholder="Correo" required><br>
+
+        <button type="submit">Guardar en Excel</button>
+    </form>
+
+    <script>
+        document.getElementById('formulario').addEventListener('submit', function(event) {
+            event.preventDefault(); // Evita el envío tradicional del formulario
+
+            // Obtén los datos del formulario
+            const formData = new FormData(this);
+
+            // Enviar los datos al servidor con fetch
+            fetch('/guardar_datos', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Error en la solicitud: ' + response.statusText);
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.message) {
+                    alert(data.message); // Muestra el mensaje de éxito
+                } else if (data.error) {
+                    alert('Error: ' + data.error); // Muestra el mensaje de error
+                }
+            })
+            .catch(error => {
+                alert('Error en la comunicación con el servidor: ' + error.message);
+                console.error('Error:', error);
+            });
+        });
+    </script>
+</body>
+</html>
